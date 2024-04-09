@@ -4,20 +4,21 @@ import './index.css';
 function App() {
   const [tableData, setTableData] = useState([]);
   const [error, setError] = useState('');
-  const [filePath, setFilePath] = useState('');
+  const [headline, setHeadline] = useState('');
+  const [year, setYear] = useState(2024);
   const [modelName, setModelName] = useState('all-MiniLM-L6-v2'); // Default model
   const [isLoading, setIsLoading] = useState(false); // State to track loading status
 
   const fetchData = (e) => {
-    e.preventDefault(); // Prevent default form submission behavior
-    setIsLoading(true); // Start loading
-    if (!filePath) {
-      setError('File path is required');
-      setIsLoading(false); // Stop loading
+    e.preventDefault();
+    setIsLoading(true);
+    if (!headline) {
+      setError('Headline is required');
+      setIsLoading(false);
       return;
     }
     
-    fetch(`http://127.0.0.1:5000/analyze?file_path=${filePath}&model_name=${modelName}`)
+    fetch(`https://capstonewebapi.azurewebsites.net/analyze?year=${year}&model_name=${modelName}`)
       .then(response => {
         if (!response.ok) {
           throw new Error('Network response was not ok');
@@ -70,10 +71,17 @@ function App() {
         <form onSubmit={fetchData} className="mb-4">
           <input 
             type="text" 
-            placeholder="Enter File Path Here" 
+            placeholder="Enter Headline Here" 
             className="input input-bordered w-full max-w-xs mr-2"
-            value={filePath}
-            onChange={(e) => setFilePath(e.target.value)}
+            value={headline}
+            onChange={(e) => setHeadline(e.target.value)}
+          />
+          <input 
+            type="number" 
+            placeholder="Enter Year Here" 
+            className="input input-bordered w-24 max-w-xs mr-2"
+            value={year}
+            onChange={(e) => setYear(e.target.value)}
           />
           <select 
             className="select select-bordered max-w-xs mr-2"
