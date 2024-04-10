@@ -18,7 +18,9 @@ function App() {
       return;
     }
     
-    fetch(`https://capstonewebapi.azurewebsites.net/analyze?year=${year}&model_name=${modelName}`)
+    // fetch(`https://capstonewebapi.azurewebsites.net/analyze?year=${year}&model_name=${modelName}`)
+    // fetch(`http://127.0.0.1:5000/analyze?year=${year}&headline=${headline}`)
+    fetch(`https://capstonewebapi.azurewebsites.net/analyze?year=${year}&headline=${headline}`)
       .then(response => {
         if (!response.ok) {
           throw new Error('Network response was not ok');
@@ -42,6 +44,8 @@ function App() {
     e.preventDefault(); // Prevent default form submission behavior
     setIsLoading(true); // Start loading
 
+    // fetch(`https://capstonewebapi.azurewebsites.net/example`)
+    // console.log("http://127.0.0.1:5000/example")
     fetch(`https://capstonewebapi.azurewebsites.net/example`)
     .then(response => {
       if (!response.ok) {
