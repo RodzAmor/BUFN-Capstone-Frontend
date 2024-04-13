@@ -127,7 +127,7 @@ function App() {
             <div className="navbar-start">
             </div>
             <div className="navbar-center">
-                <a href="" className="btn btn-ghost normal-case font-extrabold text-3xl">Financial Event Risk Analysis Tool</a>
+                <a href="" className="btn btn-ghost normal-case font-extrabold text-xl sm:text-3xl">Financial Event Risk Analysis Tool</a>
             </div>
             <div className="navbar-end">
             </div>
@@ -140,8 +140,8 @@ function App() {
           Enter a news headline or label representing an <b>event</b> or select a top news headline below:
         </p>
         {/* Form for ticker and year input */}
-        <form className="mb-4 flex items-center mx-auto" >
-          <div className="flex flex-col items-end w-1/2 p-4">
+        <form className="mb-4 flex flex-col sm:flex-row items-center mx-auto" >
+          <div className="flex flex-col items-center sm:items-end w-1/2 p-4">
             <select 
                 className="select select-bordered mb-2 w-96" 
                 value={headline}
@@ -160,7 +160,7 @@ function App() {
               onChange={(e) => setHeadline(e.target.value)} // Convert ticker to uppercase
             />
           </div>
-          <div className="flex flex-col align-middle w-1/2 p-4">
+          <div className="flex flex-col items-center sm:items-start align-middle w-1/2 p-4">
             <p className='inline w-48'>Annual Report Year</p>
             <input 
               type="number" 
@@ -178,7 +178,7 @@ function App() {
 
         {!isLoading && tableData.length > 0 && (
         <div className="p mx-auto">
-          <table className="text-center table w-full mt-4 border-solid border-2">
+          <table className="text-center table w-full mt-4 border-solid border-2 overflow-x-scroll">
             <thead>
               <tr className="bg-gray-200">
                 {Object.keys(tableData[0]).map((key) => (
