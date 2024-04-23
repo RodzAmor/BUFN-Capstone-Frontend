@@ -1,17 +1,16 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import App from './App';
-// import Test from './CosineSimilarityTable';
-
+import TickerPage from './TickerPage'; // Ensure you import TickerPage
 
 function Router() {
-    return (
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<App />} />
-          {/* <Route path="/test" element={<Test />} /> */}
-        </Routes>
-      </BrowserRouter>
-    );
-  }
-  
-  export default Router;
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<App />} />
+        <Route path="/ticker/:ticker" element={<TickerPage />} /> {/* Add this line */}
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+export default Router;

@@ -1,9 +1,19 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './index.css';
 
 
 
 function App() {
+  const navigate = useNavigate();
+  const [selectedRowIndex, setSelectedRowIndex] = useState(null); // State to track the selected row index
+  // Other states and functions...
+
+  const handleRowClick = (index, ticker) => {
+    setSelectedRowIndex(index); // Set the selected row index
+    navigate(`/ticker/${ticker}`, { state: { title: 'Financial Event Risk Analysis Tool', year: year } });
+  };
+  
   const [exampleHeadlines, setExampleHeadlines] = useState([
   "U.S. Approves $1.5 Billion Loan to Restart Michigan Nuclear Plant",
   "Biden Plans Sweeping Effort to Block Arctic Oil Drilling",
@@ -22,11 +32,12 @@ function App() {
   const [isLoading, setIsLoading] = useState(false); // State to track loading status
   const [isAnalyzing, setIsAnalyzing] = useState(false); // State to track loading status
   const [analyzingCompany, setAnalyzingCompany] = useState(''); // State to track loading status
-  const environment = "prod"
-  
+  const environment = "dev"
+
   const fetchExampleData = (e) => {
     e.preventDefault(); // Prevent default form submission behavior
     setIsLoading(true); // Start loading
+
 
     const fetchEndpoint = environment === "dev" ? `http://127.0.0.1:5000/example` : "https://finance-risk-toolkit-api-scx3vdzzxa-ue.a.run.app/example";
     fetch(fetchEndpoint)
@@ -120,6 +131,47 @@ function App() {
     }
   };
 
+
+  const handleDownloadCSV = () => {
+    if (tableData.length === 0) {
+      setError('No data available to download');
+      return;
+    }
+
+    const csvContent = generateCSV(tableData);
+    const csvBlob = new Blob([csvContent], { type: 'text/csv' });
+    const csvUrl = URL.createObjectURL(csvBlob);
+
+    // Create a temporary <a> element to trigger the download
+    const downloadLink = document.createElement('a');
+    downloadLink.href = csvUrl;
+    downloadLink.download = 'financial_data.csv';
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+
+    // Cleanup
+    document.body.removeChild(downloadLink);
+    URL.revokeObjectURL(csvUrl);
+  };
+
+  const generateCSV = (data) => {
+    const csvRows = [];
+    // Header row
+    const headers = Object.keys(data[0]);
+    csvRows.push(headers.join(','));
+
+    // Data rows
+    data.forEach((row) => {
+      const values = headers.map((header) => {
+        const escapedValue = ('"' + row[header] + '"').replace(/"/g, '""');
+        return escapedValue;
+      });
+      csvRows.push(values.join(','));
+    });
+
+    return csvRows.join('\n');
+  };
+
   
   return (
     <div className="App">
@@ -177,29 +229,39 @@ function App() {
         </form>
 
         {!isLoading && tableData.length > 0 && (
-        <div className="p mx-auto">
-          <table className="text-center table w-full mt-4 border-solid border-2 overflow-x-scroll">
-            <thead>
-              <tr className="bg-gray-200">
-                {Object.keys(tableData[0]).map((key) => (
-                  <th key={key}>{key}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {tableData.map((row, index) => (
-                <tr key={index}>
-                  {Object.values(row).map((value, valueIndex) => (
-                    <td key={valueIndex}>{value}</td>
+          <div className="p-4 mx-auto">
+            <table className="text-center table w-full mt-4 border-solid border-2 overflow-x-scroll">
+              <thead>
+                <tr className="bg-gray-200">
+                  {Object.keys(tableData[0]).map((key) => (
+                    <th key={key}>{key}</th>
                   ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-          {isAnalyzing && <p className='m-2'>Analyzing: {analyzingCompany}...</p>}
+              </thead>
+              <tbody>
+                {tableData.map((row, index) => (
+                  <tr key={index} 
+                      onClick={() => handleRowClick(index, row['Ticker'])}
+                      className={selectedRowIndex === index ? "selected-row" : ""}
+                  >
+                    {Object.values(row).map((value, valueIndex) => (
+                      <td key={valueIndex}>{value}</td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {isAnalyzing && <p className='m-2'>Analyzing: {analyzingCompany}...</p>}
+          </div>
+        )}
+        {/* Button to download CSV */}
+        {!isLoading && tableData.length > 0 && (
+          <div className="mt-4 mb-4 text-center"> {/* Added mb-4 for margin bottom */}
+          <button type="button" className="btn btn-primary w-48" onClick={handleDownloadCSV}>
+            Download Data as CSV
+          </button>
         </div>
         )}
-
       
       {isLoading && <p>Processing Headline...</p>}
       {error && <p className="text-red-500">{error}</p>}

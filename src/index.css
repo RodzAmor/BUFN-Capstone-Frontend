@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* CSS for selected row highlight */
+/* Adding hover effect for table rows */
+/* Hover effect only if the row is not selected */
+/* Styles for table rows */
+/* CSS for selected row highlight */
+.selected-row {
+    background-color: #add8e6; /* Light blue color for the selected row */
+}
+
+/* Ensure that the hover effect is applied to rows and not headers */
+tbody tr:hover {
+    background-color: #f0f8ff; /* Different light blue color for hover */
+}
+
+
