@@ -73,7 +73,7 @@ const TickerPage = () => {
                 </div>
             </div>
             <div className="flex flex-col items-center justify-center min-h-screen">
-            <a href="../" className="btn normal-case font-extrabold text-xl sm:text-3xl mb-12">Back to Toolkit</a>
+            <a href="../" className="btn normal-case font-extrabold text-xl sm:text-3xl mb-24">Back to Toolkit</a>
                 <h1 className="text-3xl font-bold mb-6 text-center">{ticker} Information for {selectedYear}</h1>
                 {loading && <p>Loading...</p>}
                 {error && <p className="text-red-500 text-center">{error}</p>}
