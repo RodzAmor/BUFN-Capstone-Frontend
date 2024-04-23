@@ -172,6 +172,24 @@ function App() {
     return csvRows.join('\n');
   };
 
+  const getBackgroundColor = (key, value) => {
+    if (key === 'Highest Semantic Similarity') {
+      const sentiment = parseFloat(value);
+      if (!isNaN(sentiment)) {
+        if (sentiment > 0.3) {
+          return '#b5ffad';
+        } else if (sentiment > 0.2) {
+          return '#fffaad'; // Slightly darker yellow
+        } else {
+          return '#edb4b4';
+        }
+      }
+    }
+    return 'inherit'; // Default background color
+  };
+  
+  
+  
   
   return (
     <div className="App">
@@ -239,16 +257,16 @@ function App() {
                 </tr>
               </thead>
               <tbody>
-                {tableData.map((row, index) => (
-                  <tr key={index} 
-                      onClick={() => handleRowClick(index, row['Ticker'])}
-                      className={selectedRowIndex === index ? "selected-row" : ""}
-                  >
-                    {Object.values(row).map((value, valueIndex) => (
-                      <td key={valueIndex}>{value}</td>
-                    ))}
-                  </tr>
-                ))}
+              {tableData.map((row, index) => (
+                <tr key={index} 
+                    onClick={() => handleRowClick(index, row['Ticker'])}
+                    className={selectedRowIndex === index ? "selected-row" : ""}
+                >
+                  {Object.entries(row).map(([key, value], valueIndex) => (
+                    <td key={valueIndex} style={{ backgroundColor: getBackgroundColor(key, value) }}>{value}</td>
+                  ))}
+                </tr>
+              ))}
               </tbody>
             </table>
             {isAnalyzing && <p className='m-2'>Analyzing: {analyzingCompany}...</p>}
