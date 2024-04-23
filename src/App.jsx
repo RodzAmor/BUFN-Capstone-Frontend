@@ -25,7 +25,6 @@ function App() {
   const [year, setYear] = useState(2024);
   const [tableData, setTableData] = useState([]);
   const [error, setError] = useState('');
-  const [abortHelper, setAbortHelper] = useState(false);
   const [headline, setHeadline] = useState('');
   const [limit, setLimit] = useState('');
   const [tickers, setTickers] = useState([]);
@@ -36,18 +35,15 @@ function App() {
   const [abortController, setAbortController] = useState(null);
 
 
-  const environment = "dev"
+  const environment = "prod"
   const apiUrl = environment === "dev" ? "http://127.0.0.1:5000" : "https://finance-risk-toolkit-api-scx3vdzzxa-ue.a.run.app";
 
   const fetchExampleData = (e) => {
     e.preventDefault(); // Prevent default form submission behavior
     
     if (abortController) {
-      console.log("Abort!");
       abortController.abort(); // Abort any ongoing fetch operation
     }
-    setAbortHelper(true);
-    console.log("abort helper? " + abortHelper)
 
     const newAbortController = new AbortController();
     setAbortController(newAbortController);
@@ -146,7 +142,6 @@ function App() {
   };
 
   const fetchData = async () => {
-    setAbortHelper(false);
     if (abortController) {
       abortController.abort(); // Abort any ongoing fetch operation
     }
@@ -362,11 +357,13 @@ function App() {
 export default App;
 
 
-// docker build -t finance-toolkit-api .
 // docker buildx build --platform linux/amd64 -t finance-toolkit-api .
 // docker tag finance-toolkit-api gcr.io/bufn-capstone/finance-toolkit-api:latest
 // docker push gcr.io/bufn-capstone/finance-toolkit-api:latest
-// gcloud run deploy finance-toolkit-api --image gcr.io/bufn-capstone/finance-toolkit-api:latest --platform managed --allow-unauthenticated
 
+
+// Unused
+// docker build -t finance-toolkit-api .
+// gcloud run deploy finance-toolkit-api --image gcr.io/bufn-capstone/finance-toolkit-api:latest --platform managed --allow-unauthenticated
 // docker run --rm -p 8080:8080 finance-toolkit-api
 // docker image inspect finance-toolkit-api
