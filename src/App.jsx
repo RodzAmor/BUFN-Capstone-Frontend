@@ -74,6 +74,12 @@ function App() {
     fetchTickers();
   }, []);
 
+  const onChangeSector = (e) => {
+    const newSector = e.target.value;
+    setSector(newSector);
+    // fetchTickers(newSector); // Pass new sector directly to the fetch function
+  };
+
   const fetchHeadlines = async () => {
     setIsLoading(true);
 
@@ -127,8 +133,13 @@ function App() {
     }
   }
 
+  useEffect(() => {
+    fetchTickers();
+  }, [sector]);
+
   const fetchTickers = async () => {
     try {
+      console.log(sector);
       const fetchEndpoint = `${apiUrl}/get-tickers?farma=${sector}`
       const response = await fetch(fetchEndpoint);
       const data = await response.json();
@@ -292,7 +303,7 @@ function App() {
             <select 
                 className="select select-bordered mb-2" 
                 value={sector}
-                onChange={(e) => {setSector(e.target.value); fetchTickers();}}
+                onChange={onChangeSector}
               >
                 <option key="0" value="0">All Sectors</option>
                 <option key="1" value="1">Consumer</option>
