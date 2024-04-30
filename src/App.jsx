@@ -28,6 +28,7 @@ function App() {
   const [error, setError] = useState('');
   const [headline, setHeadline] = useState('');
   const [limit, setLimit] = useState('');
+  const [model, setModel] = useState('cosine');
   const [tickers, setTickers] = useState([]);
   const [sector, setSector] = useState(0);
   const [isLoading, setIsLoading] = useState(false); // State to track loading status
@@ -112,6 +113,7 @@ function App() {
   };
 
   const getBackgroundColor = (key, value) => {
+    console.log(key);
     if (key === 'Highest Semantic Similarity') {
       const sentiment = parseFloat(value);
       if (!isNaN(sentiment)) {
@@ -122,6 +124,14 @@ function App() {
         } else {
           return '#edb4b4';
         }
+      }
+    } else if (key === 'Semantic Similarity Evaluation') {
+      if (value === "High") {
+        return '#b5ffad';
+      } else if (value === "Medium") {
+        return '#fffaad'; // Slightly darker yellow
+      } else if (value === "Low") {
+        return '#edb4b4';
       }
     }
     return 'inherit'; // Default background color
@@ -175,7 +185,7 @@ function App() {
         try {
         setAnalyzingCompany(tickerSymbol);
         setIsAnalyzing(true);
-        const fetchEndpoint = `${apiUrl}/analyze-company?ticker=${tickerSymbol}&year=${year}&headline=${headline}`;
+        const fetchEndpoint = `${apiUrl}/analyze-company?ticker=${tickerSymbol}&year=${year}&model=${model}&headline=${headline}`;
 
         const response = await fetch(fetchEndpoint, { signal: newAbortController.signal });
         if (!response.ok) {
@@ -190,7 +200,8 @@ function App() {
           "Fill Date": data[0]["Fill Date"],
           Year: data[0]["Year"],
           "Headline": headline,
-          "Highest Semantic Similarity": data[0]["Highest Similarity Score"],
+          // "Highest Semantic Similarity": data[0]["Highest Similarity Score"],
+          "Semantic Similarity Evaluation": data[0]["Similarity Evaluation"],
           "Risk Section Representative Segment": data[0]["Risk Section Representative Segment"],
         };
         if (data[0]["Ticker"] == null) {
@@ -305,6 +316,18 @@ function App() {
                 <option key="4" value="4">Health and Medical</option>
                 <option key="5" value="5">Energy</option>
                 <option key="6" value="6">Other including Finance</option>
+            </select>
+            <p className='inline w-52 mb-2'>Select Similarity Method</p>
+            <select 
+                className="select select-bordered mb-2" 
+                value={model}
+                onChange={(e) => setModel(e.target.value)}
+              >
+                <option key="cosine" value="cosine">Cosine Similarity</option>
+                <option key="nlp" value="nlp">Natural Language Processing</option>
+                {/* <option key="bert" value="bert">RoBERTa Model</option> */}
+                <option key="jaccard" value="jaccard">Jaccard Similarity</option>
+                <option key="tfidf" value="tfidf">TF-IDF</option>
             </select>
             <button type="button" className="btn btn-primary w-48" onClick={fetchData}>Analyze Headline</button>
           </div>

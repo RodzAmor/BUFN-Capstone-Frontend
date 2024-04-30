@@ -90,20 +90,20 @@ const TickerPage = () => {
                                     responsive: true,
                                     plugins: {
                                     annotation: {
-                                        annotations: [
-                                        {
-                                            type: 'line',
-                                            scaleID: 'x',
-                                            value: '2023-04-01', // Replace with the desired date
-                                            borderColor: 'red',
-                                            borderWidth: 2,
-                                            label: {
-                                            content: 'Important Date',
-                                            enabled: true,
-                                            position: 'start',
-                                            },
-                                        },
-                                        ],
+                                        // annotations: [
+                                        // {
+                                        //     type: 'line',
+                                        //     scaleID: 'x',
+                                        //     value: '2023-04-01', // Replace with the desired date
+                                        //     borderColor: 'red',
+                                        //     borderWidth: 2,
+                                        //     label: {
+                                        //     content: 'Important Date',
+                                        //     enabled: true,
+                                        //     position: 'start',
+                                        //     },
+                                        // },
+                                        // ],
                                     },
                                     },
                                 }}
