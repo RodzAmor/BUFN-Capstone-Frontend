@@ -1,7 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import { Line } from 'react-chartjs-2';
+import Navbar from './Navbar';
 import 'chart.js/auto';
+import annotationPlugin from 'chartjs-plugin-annotation';
+
+import { Chart } from 'chart.js/auto';
+Chart.register(annotationPlugin);
+
 
 const TickerPage = () => {
     const { ticker } = useParams();
@@ -12,7 +18,7 @@ const TickerPage = () => {
 
     // Assume that the year is passed as state in the navigate function from App.jsx
     const selectedYear = location.state?.year; 
-    const environment = "prod"
+    const environment = "dev"
     const apiUrl = environment === "dev" ? "http://127.0.0.1:5000" : "https://finance-risk-toolkit-api-scx3vdzzxa-ue.a.run.app";
 
     useEffect(() => {
@@ -61,32 +67,47 @@ const TickerPage = () => {
 
     return (
         <div>
-            <div className="navbar bg-slate-200 p-3 mb-2">
-                <div className="navbar-start">
-
-                </div>
-                <div className="navbar-center">
-                    <a href="../" className="btn btn-ghost normal-case font-extrabold text-xl sm:text-3xl">Financial Event Risk Analysis Tool</a>
-                </div>
-                <div className="navbar-end">
-                    
-                </div>
-            </div>
+            <Navbar></Navbar>
             <div className="flex flex-col items-center justify-center min-h-screen">
-            <a href="../" className="btn normal-case font-extrabold text-xl sm:text-3xl mb-24">Back to Toolkit</a>
+            {/* <a href="../" className="btn normal-case font-extrabold text-xl sm:text-3xl mb-24">Back to Toolkit</a> */}
                 <h1 className="text-3xl font-bold mb-6 text-center">{ticker} Information for {selectedYear}</h1>
                 {loading && <p>Loading...</p>}
                 {error && <p className="text-red-500 text-center">{error}</p>}
                 {!loading && !error && stockData && (
                     <div className="w-full max-w-4xl mx-auto"> {/* Adjust the max-width as needed */}
                         <div className="w-full" style={{ height: '50vh' }}> {/* Adjust the height as needed */}
-                            <Line 
+                            {/* <Line 
                                 data={stockData} 
                                 options={{
                                     maintainAspectRatio: false, // Change to false to allow custom height
                                     responsive: true,
                                 }}
-                            />
+                            /> */}
+                            <Line
+                                data={stockData}
+                                options={{
+                                    maintainAspectRatio: false,
+                                    responsive: true,
+                                    plugins: {
+                                    annotation: {
+                                        annotations: [
+                                        {
+                                            type: 'line',
+                                            scaleID: 'x',
+                                            value: '2023-04-01', // Replace with the desired date
+                                            borderColor: 'red',
+                                            borderWidth: 2,
+                                            label: {
+                                            content: 'Important Date',
+                                            enabled: true,
+                                            position: 'start',
+                                            },
+                                        },
+                                        ],
+                                    },
+                                    },
+                                }}
+                                />
                         </div>
                     </div>
                 )}

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Navbar from './Navbar';
 import './index.css';
 
 function App() {
@@ -35,7 +36,7 @@ function App() {
   const [abortController, setAbortController] = useState(null);
 
 
-  const environment = "prod"
+  const environment = "dev"
   const apiUrl = environment === "dev" ? "http://127.0.0.1:5000" : "https://finance-risk-toolkit-api-scx3vdzzxa-ue.a.run.app";
 
   const fetchExampleData = (e) => {
@@ -252,15 +253,7 @@ function App() {
   
   return (
     <div className="App">
-      <div className="navbar bg-slate-200 p-3 mb-2">
-            <div className="navbar-start">
-            </div>
-            <div className="navbar-center">
-                <a href="" className="btn btn-ghost normal-case font-extrabold text-xl sm:text-3xl">Financial Event Risk Analysis Tool</a>
-            </div>
-            <div className="navbar-end">
-            </div>
-        </div>
+      <Navbar></Navbar>
       <header className="App-header"></header>
       <div className="container text-center mx-auto">
         <h1 className="text-xl font-semibold p-4 mb-2">Event Semantic Similarity Analysis With Company SEC 10-K Risk Factors</h1>
