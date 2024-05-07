@@ -3,111 +3,108 @@ import { useParams, useLocation } from 'react-router-dom';
 import { Line } from 'react-chartjs-2';
 import Navbar from './Navbar';
 import 'chart.js/auto';
-import annotationPlugin from 'chartjs-plugin-annotation';
-
-import { Chart } from 'chart.js/auto';
-Chart.register(annotationPlugin);
-
 
 const TickerPage = () => {
     const { ticker } = useParams();
-    const location = useLocation(); // To access the router state
+    const location = useLocation();
     const [stockData, setStockData] = useState(null);
+    const [companyInfo, setCompanyInfo] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
-    // Assume that the year is passed as state in the navigate function from App.jsx
-    const selectedYear = location.state?.year; 
-    const environment = "dev"
+    
+    const environment = "dev";
     const apiUrl = environment === "dev" ? "http://127.0.0.1:5000" : "https://finance-risk-toolkit-api-scx3vdzzxa-ue.a.run.app";
+    var selectedYear = location.state?.year;
+    const [year, setYear] = useState(selectedYear);
+    const [yearLabel, setYearLabel] = useState(selectedYear);
+    
+    const fetchStockData = async (e=null) => {
+        if (e != null) {
+            e.preventDefault();
+        }
+
+        try {
+            const response = await fetch(`${apiUrl}/api/stock/${ticker}?year=${year}`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const jsonData = await response.json();
+
+            if (!Array.isArray(jsonData.historicalData)) {
+                throw new Error('Data format is incorrect, expected an array of data points');
+            }
+
+            setStockData({
+                labels: jsonData.historicalData.map(item => new Date(item.date).toLocaleDateString()),
+                datasets: [{
+                    label: `${ticker} Stock Price`,
+                    data: jsonData.historicalData.map(item => item.close),
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }]
+            });
+
+            setCompanyInfo({
+                fullName: jsonData.companyInfo.fullName,
+                revenue: jsonData.companyInfo.revenue,
+                ebitda: jsonData.companyInfo.ebitda,
+                employees: jsonData.companyInfo.employees,
+                headquarters: jsonData.companyInfo.headquarters,
+                website: jsonData.companyInfo.website,
+                description: jsonData.companyInfo.description
+            });
+
+            setYearLabel(year);
+        } catch (e) {
+            setError(`Failed to fetch stock data: ${e.message}`);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchStockData = async () => {
-            try {
-                // Use the selected year in the API call
-                const response = await fetch(`${apiUrl}/api/stock/${ticker}?year=${selectedYear}`);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const jsonData = await response.json();
-
-                // Verify that jsonData is an array
-                if (!Array.isArray(jsonData)) {
-                    console.error('Data received is not an array:', jsonData);
-                    throw new Error('Data format is incorrect, expected an array of data points');
-                }
-
-                // Map over the array to extract the date and close price
-                const labels = jsonData.map(item => new Date(item.date).toLocaleDateString());
-                const data = jsonData.map(item => item.close);
-
-                setStockData({
-                    labels,
-                    datasets: [
-                        {
-                            label: `${ticker} Stock Price`,
-                            data,
-                            fill: false,
-                            borderColor: 'rgb(75, 192, 192)',
-                            tension: 0.1
-                        }
-                    ]
-                });
-            } catch (e) {
-                setError(`Failed to fetch stock data: ${e.message}`);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         if (ticker && selectedYear) {
             fetchStockData();
         }
-    }, [ticker, selectedYear]); // Add selectedYear as a dependency
+    }, [ticker, selectedYear]);
 
     return (
         <div>
-            <Navbar></Navbar>
+            <Navbar />
             <div className="flex flex-col items-center justify-center min-h-screen">
-            {/* <a href="../" className="btn normal-case font-extrabold text-xl sm:text-3xl mb-24">Back to Toolkit</a> */}
-                <h1 className="text-3xl font-bold mb-6 text-center">{ticker} Information for {selectedYear}</h1>
+                <h1 className="text-3xl font-bold text-center" style={{ marginTop: '5vh', marginBottom: '5vh' }}>{ticker} Information for {yearLabel}</h1>
+                <div className='flex align-middle mb-4'>
+                    <input 
+                    type="number" 
+                    placeholder="Enter Year Here" 
+                    className="input input-bordered w-24 mx-2"
+                    value={year}
+                    onChange={(e) => {
+                        setYear(e.target.value);
+                        selectedYear = e.target.value;
+                    }}
+                    />
+                    <form onSubmit={fetchStockData} className="mx-2">
+                        <button type="submit" className="btn btn-primary">Query Annual Stock Data</button>
+                    </form>
+                </div>
                 {loading && <p>Loading...</p>}
                 {error && <p className="text-red-500 text-center">{error}</p>}
-                {!loading && !error && stockData && (
-                    <div className="w-full max-w-4xl mx-auto"> {/* Adjust the max-width as needed */}
-                        <div className="w-full" style={{ height: '50vh' }}> {/* Adjust the height as needed */}
-                            {/* <Line 
-                                data={stockData} 
-                                options={{
-                                    maintainAspectRatio: false, // Change to false to allow custom height
-                                    responsive: true,
-                                }}
-                            /> */}
-                            <Line
-                                data={stockData}
-                                options={{
-                                    maintainAspectRatio: false,
-                                    responsive: true,
-                                    plugins: {
-                                    annotation: {
-                                        // annotations: [
-                                        // {
-                                        //     type: 'line',
-                                        //     scaleID: 'x',
-                                        //     value: '2023-04-01', // Replace with the desired date
-                                        //     borderColor: 'red',
-                                        //     borderWidth: 2,
-                                        //     label: {
-                                        //     content: 'Important Date',
-                                        //     enabled: true,
-                                        //     position: 'start',
-                                        //     },
-                                        // },
-                                        // ],
-                                    },
-                                    },
-                                }}
-                                />
+                {!loading && !error && stockData && companyInfo && (
+                    <div className="w-full max-w-4xl mx-auto">
+                        <div className="text-lg mt-8">
+                            <p><strong>Full Name:</strong> {companyInfo.fullName}</p>
+                            <p><strong>Revenue:</strong> {companyInfo.revenue ? companyInfo.revenue.toLocaleString('en-US', { style: 'currency', currency: 'USD' }) : 'N/A'}</p>
+                            <p><strong>EBITDA:</strong> {companyInfo.ebitda.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</p>
+                            <p><strong>Total Employees:</strong> {companyInfo.employees ? companyInfo.employees.toLocaleString() : 'N/A'}</p>
+                            <p><strong>Headquarters:</strong> {companyInfo.headquarters}</p>
+                            <p><strong>Website:</strong> <a href={companyInfo.website} className='link' target="_blank">{companyInfo.website}</a></p>
+                        </div>
+                        <div className="w-full" style={{ height: '50vh', marginTop: '5vh', marginBottom: '5vh' }}>
+                            <Line data={stockData} options={{ maintainAspectRatio: false, responsive: true }}/>
+                        </div>
+                        <div className="text-lg mt-8">
+                            <p><strong>Description:</strong> {companyInfo.description}</p>
                         </div>
                     </div>
                 )}

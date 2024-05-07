@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from './Navbar';
+import { useNavigate } from 'react-router-dom';
 import { FaFileExcel } from 'react-icons/fa';
 
 
 function SECRiskFilings() {
+    const navigate = useNavigate();
     const [files, setFiles] = useState([]);
     const [searchTicker, setSearchTicker] = useState('');
     const [sector, setSector] = useState(0);
@@ -12,7 +14,9 @@ function SECRiskFilings() {
     const apiUrl = environment === "dev" ? "http://127.0.0.1:5000" : "https://finance-risk-toolkit-api-scx3vdzzxa-ue.a.run.app";
 
     const fetchCompanies = async () => {
+        
         // e.preventDefault();
+
         try {
             setFiles([]);
             let fetchEndpoint = `${apiUrl}/get-files?farma=${sector}`
@@ -33,6 +37,10 @@ function SECRiskFilings() {
         }
     };
 
+    const handleRowClick = (ticker) => {
+        navigate(`/ticker/${ticker}`, { state: { title: 'Financial Event Risk Analysis Tool', year: 2024 } });
+      };
+
     const downloadCompany = (ticker, sector) => {
         const downloadUrl = `${apiUrl}/download-csv/?sector=${sector}&ticker=${ticker}`;
         window.open(downloadUrl);
@@ -42,17 +50,6 @@ function SECRiskFilings() {
         fetchCompanies();
 
     }, [searchTicker, sector]);
-
-    // useEffect(() => {
-    //     axios.get('/list-csvs')
-    //         .then(response => {
-    //             setFiles(response.data);
-    //         })
-    //         .catch(error => {
-    //             console.log('Error fetching files', error);
-    //         });
-    // }, []);
-
 
 
     return (
@@ -93,7 +90,8 @@ function SECRiskFilings() {
                         <thead>
                           <tr className="bg-gray-200">
                             <th>Ticker</th>
-                            <th>Sector</th>
+                            <th>Farma French Sector</th>
+                            <th>View Stock Chart</th>
                             <th>Download Risk Filings</th>
                           </tr>
                         </thead>
@@ -103,8 +101,9 @@ function SECRiskFilings() {
                                 <tr key={ticker}>
                                     <td>{ticker}</td>
                                     <td>{sector}</td>
+                                    <td onClick={() => handleRowClick(ticker)} className='link-secondary'>View {ticker} Stock Chart</td>
                                     <td onClick={() => downloadCompany(ticker, sector)}>
-                                        <FaFileExcel color="green" className="mx-auto" size={24} />
+                                        Download CSV <FaFileExcel color="green" className="mx-auto" size={24} />
                                     </td>
                                 </tr>
                                 );

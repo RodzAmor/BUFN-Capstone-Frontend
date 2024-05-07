@@ -28,7 +28,7 @@ function App() {
   const [error, setError] = useState('');
   const [headline, setHeadline] = useState('');
   const [limit, setLimit] = useState('');
-  const [model, setModel] = useState('cosine');
+  const [model, setModel] = useState('ensemble');
   const [tickers, setTickers] = useState([]);
   const [sector, setSector] = useState(0);
   const [isLoading, setIsLoading] = useState(false); // State to track loading status
@@ -104,9 +104,7 @@ function App() {
         console.log(article.title)
       });
     } catch (error) {
-      // setError('Failed to load headlines. API key has run out of available calls.');
       // console.error('API key has run out of available calls. Error fetching headlines:', error);
-      // console.log("It will be prefilled with data.")
     } finally {
       setIsLoading(false);
     }
@@ -126,11 +124,11 @@ function App() {
         }
       }
     } else if (key === 'Semantic Similarity Evaluation') {
-      if (value === "High") {
+      if (value === "High Similarity") {
         return '#b5ffad';
-      } else if (value === "Medium") {
+      } else if (value === "Medium Similarity") {
         return '#fffaad'; // Slightly darker yellow
-      } else if (value === "Low") {
+      } else if (value === "Low Similarity") {
         return '#edb4b4';
       }
     }
@@ -160,6 +158,21 @@ function App() {
       setTickers(data["tickers"]);
     } catch (e) {
       setTickers([]);
+    }
+  };
+
+
+  const fetchEvents = async (e) => {  
+    console.log("Fetching Events...")
+    e.preventDefault();
+    try {
+      const response = await fetch(`${apiUrl}/get-events`);
+      const data = await response.json();
+
+      console.log(data)
+
+    } catch (error) {
+      // console.error('API key has run out of available calls. Error fetching headlines:', error);
     }
   };
 
@@ -274,7 +287,8 @@ function App() {
         </p>
         {/* Form for ticker and year input */}
         <form className="mb-4 flex flex-col sm:flex-row justify-center items-center mx-auto" >
-          <div className="flex flex-col items-center sm:items-end w-1/3 p-4">
+          
+          <div className="flex flex-col items-center w-1/3 p-4">
             <select 
                 className="select select-bordered mb-2 w-96" 
                 value={headline}
@@ -292,9 +306,12 @@ function App() {
               value={headline}
               onChange={(e) => setHeadline(e.target.value)} // Convert ticker to uppercase
             />
+            {/* <div className='justify-center my-4'>
+              <button type="submit" onClick={fetchEvents} className="btn btn-secondary">Fetch Events</button>
+            </div> */}
           </div>
           
-          <div className="flex flex-col items-center sm:items-start align-middle w-1/3 p-4">
+          <div className="flex flex-col items-center align-middle w-1/3 p-4">
             <p className='inline w-48'>Annual Report Year</p>
             <input 
               type="number" 
@@ -323,6 +340,7 @@ function App() {
                 value={model}
                 onChange={(e) => setModel(e.target.value)}
               >
+                {/* <option key="ensemble" value="ensemble">Ensemble Evaluation *Not Done*</option> */}
                 <option key="cosine" value="cosine">Cosine Similarity</option>
                 <option key="nlp" value="nlp">Natural Language Processing</option>
                 {/* <option key="bert" value="bert">RoBERTa Model</option> */}
