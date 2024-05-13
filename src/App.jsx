@@ -28,7 +28,7 @@ function App() {
   const [error, setError] = useState('');
   const [headline, setHeadline] = useState('');
   const [limit, setLimit] = useState('');
-  const [model, setModel] = useState('ensemble');
+  const [model, setModel] = useState('cosine');
   const [tickers, setTickers] = useState([]);
   const [sector, setSector] = useState(0);
   const [isLoading, setIsLoading] = useState(false); // State to track loading status
