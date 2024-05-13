@@ -62,10 +62,12 @@ function KnowledgeGraph() {
         // Convert response to an array
         var responseList = "";
         try {
-            responseList = Array.from(new Set(JSON.parse(response.replace(/'/g, '"'))));
-
+            // responseList = Array.from(new Set(JSON.parse(response.replace(/'/g, '"'))));
+            responseList = response.replace(/'\s*,\s*'/g, '", "').replace(/^\['/, '["').replace(/'\]$/, '"]');
+            responseList = JSON.parse(responseList);
         } catch(e) {
-            return ""
+            console.log(e);
+            return <li key={e} className="text-left text-red-600">Error in Parsing Risk Factors</li>
         }
 
         return responseList.map((item, index) => (
@@ -79,7 +81,7 @@ function KnowledgeGraph() {
         }
 
         setGraph({});
-        fetch(`${apiUrl}/api/graph-data?minConnections=${minConnection}&sector=${selectedSector}&type=${selectedEventType}`)
+        fetch(`${apiUrl}/api/graph-data2?minConnections=${minConnection}&sector=${selectedSector}&type=${selectedEventType}`)
             .then(response => response.json())
             .then(data => {
                 console.log(data)
@@ -228,13 +230,13 @@ function KnowledgeGraph() {
                             <p className="text-center my-3">{selectedEvent.label}</p>
                             <p className="text-center"><b>Type:</b> {selectedEvent.event_type}</p>
 
-                            <b><p className="text-center">Companies At Risk</p></b>
                             <br></br>
+                            <b><p className="text-center">Companies At Risk</p></b>
                             <div className='px-4 mx-auto'>
                                 <ul className='list-disc mx-4 w-80'>
                                     {
                                         selectedEvent.connected_companies.map((item, index) => (
-                                            <li key={index} className="text-left">{item}</li>
+                                            <li key={index} className="text-left">{item.split("_")[0]}</li>
                                         ))
                                     }
                                 </ul>
