@@ -8,7 +8,10 @@ function KnowledgeGraph() {
     const navigate = useNavigate();
     const [selectedCompany, setSelectedCompany] = useState(null);
     // const [selectedYear, setSelectedYear] = useState(2010);
+    const [selectedEventType, setSelectedEventType] = useState("All");
+    const [selectedSector, setSelectedSector] = useState("All");
     const [selectedEvent, setSelectedEvent] = useState(null);
+    const [minConnection, setMinConnection] = useState(2);
     const [graph, setGraph] = useState({ nodes: [], edges: [] });
     
     const environment = "dev"
@@ -47,37 +50,39 @@ function KnowledgeGraph() {
     };
 
     const eventColors = {
-        "1": "#e74c3c", // Consumer - Blue
+        "1": "#ffd6ba",
+        "2": "#5DADE2",
+        "3": "#F1C40F",
+        "4": "#417B5A",
+        "5": "#E67E22",
+        "6": "#8E44AD"
     };
     
     const renderRiskFactors = (response) => {
         // Convert response to an array
-        // const responseList = JSON.parse(response.replace(/'/g, '"'));
-        const responseList = Array.from(new Set(JSON.parse(response.replace(/'/g, '"'))));
+        var responseList = "";
+        try {
+            responseList = Array.from(new Set(JSON.parse(response.replace(/'/g, '"'))));
+
+        } catch(e) {
+            return ""
+        }
 
         return responseList.map((item, index) => (
             <li key={index} className="text-left">{item}</li>
         ));
     }
 
-    // const renderConnectedCompanies = (response) => {
-    //     // Convert response to an array
-    //     const responseList = Array.from(new Set(JSON.parse(response.replace(/'/g, '"'))));
-
-    //     return responseList.map((item, index) => (
-    //         <li key={index} className="text-left">{item}</li>
-    //     ));
-    // }
-
     function fetchGraphData(e=null, all=false) {
         if (e != null) {
             e.preventDefault();
         }
 
-        fetch(`${apiUrl}/api/graph-data`)
+        setGraph({});
+        fetch(`${apiUrl}/api/graph-data?minConnections=${minConnection}&sector=${selectedSector}&type=${selectedEventType}`)
             .then(response => response.json())
             .then(data => {
-
+                console.log(data)
                 const updatedNodes = data.nodes.map(node => {
                     if (node.type === "company") {
                         node.size = 10;
@@ -95,7 +100,7 @@ function KnowledgeGraph() {
 
     useEffect(() => {
         fetchGraphData();
-    }, [apiUrl]);
+    }, [apiUrl, minConnection, selectedEventType, selectedSector]);
     
     
 
@@ -130,15 +135,15 @@ function KnowledgeGraph() {
         },
         physics: {
             enabled: true,
-            solver: 'forceAtlas2Based',
-            forceAtlas2Based: {
-                gravitationalConstant: -50,
-                centralGravity: 0.01,
-                springLength: 100,
-                springConstant: 0.08,
-                damping: 0.4,
-                avoidOverlap: 1
-            }
+            // solver: 'forceAtlas2Based',
+            // forceAtlas2Based: {
+            //     gravitationalConstant: -50,
+            //     centralGravity: 0.01,
+            //     springLength: 100,
+            //     springConstant: 0.08,
+            //     damping: 0.4,
+            //     avoidOverlap: 1
+            // }
         },
         nodes: {
             shape: "dot", // Set default shape
@@ -187,7 +192,7 @@ function KnowledgeGraph() {
                                 <div key={key} className="flex text-center items-center mx-auto mb-1">
                                 <span
                                     className={`w-4 h-4 mr-1`}
-                                    style={{ backgroundColor: sectorColors[key] }}
+                                    style={{ backgroundColor: eventColors[key] }}
                                 ></span>
                                 {sector}
                                 </div>
@@ -221,13 +226,12 @@ function KnowledgeGraph() {
                         <div className="flex flex-col flex-wrap text-center justify-center mb-5">
                             <h3 className="mr-2 font-bold text-lg text-center my-2">Selected Event</h3>
                             <p className="text-center my-3">{selectedEvent.label}</p>
-                            <p className="text-center"><b>Type:</b> {selectedEvent.title}</p>
+                            <p className="text-center"><b>Type:</b> {selectedEvent.event_type}</p>
 
                             <b><p className="text-center">Companies At Risk</p></b>
                             <br></br>
                             <div className='px-4 mx-auto'>
                                 <ul className='list-disc mx-4 w-80'>
-                                    {/* {renderConnectedCompanies(selectedEvent.connected_companies)} */}
                                     {
                                         selectedEvent.connected_companies.map((item, index) => (
                                             <li key={index} className="text-left">{item}</li>
@@ -249,6 +253,48 @@ function KnowledgeGraph() {
                     )}
                 </div>
             </div>
+            <div className='flex justify-center items-center my-5'>
+                <p className='inline-block text-center w-32 mb-2 mx-2'>Filter by Sector</p>
+                <select 
+                    className="select select-bordered mb-2 mx-2" 
+                    value={selectedSector}
+                    onChange={(e) => setSelectedSector(e.target.value)}
+                >
+                    <option key="All" value="All">All</option>
+                    <option key="Consumer" value="Consumer">Consumer</option>
+                    <option key="Manufacturing" value="Manufacturing">Manufacturing</option>
+                    <option key="HiTec" value="HiTec">HiTec</option>
+                    <option key="Health and Medical" value="Health and Medical">Health and Medical</option>
+                    <option key="Energy" value="Energy">Energy</option>
+                    <option key="Other including Finance" value="Other including Finance">Other including Finance</option>
+                </select>
+                <p className='inline-block text-center w-36 mb-2 mx-2'>Filter By Event Type</p>
+                <select 
+                    className="select select-bordered mb-2 mx-2" 
+                    value={selectedEventType}
+                    onChange={(e) => setSelectedEventType(e.target.value)}
+                >
+                    <option key="All" value="All">All</option>
+                    <option key="General" value="General">General</option>
+                    <option key="Weather" value="Weather">Weather</option>
+                    <option key="Political" value="Political">Political</option>
+                    <option key="Economy" value="Economy">Economy</option>
+                    <option key="Energy" value="Energy">Energy</option>
+                    <option key="Finance" value="Finance">Business</option>
+                </select>
+            </div>
+            <div className='flex justify-center items-center my-5'>
+                <p className='inline-block text-center w-52 mb-2 mx-2'>Select the Minimum Number of Connections</p>
+                <select 
+                    className="select select-bordered mb-2 mx-2" 
+                    value={minConnection}
+                    onChange={(e) => setMinConnection(e.target.value)}
+                >
+                    <option key="1" value="1">1 Connection</option>
+                    <option key="2" value="2">2 Connections</option>
+                    <option key="3" value="3">3 Connections</option>
+                </select>
+            </div>
             {/* <div className='mx-auto flex justify-center container align-middle mb-4'>
                 <input 
                     type="number" 
@@ -262,7 +308,7 @@ function KnowledgeGraph() {
                 </form>
             </div> */}
             
-            <div className="container text-center mx-auto border">
+            <div className="container text-center mx-auto border-4">
                 <Graph graph={graph} options={options} events={events} style={{ height: "700px" }} />
             </div>
         </div>

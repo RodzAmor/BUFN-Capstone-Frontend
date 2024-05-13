@@ -72,7 +72,7 @@ const TickerPage = () => {
         <div>
             <Navbar />
             <div className="flex flex-col items-center justify-center min-h-screen">
-                <h1 className="text-3xl font-bold text-center" style={{ marginTop: '5vh', marginBottom: '5vh' }}>{ticker} Information for {yearLabel}</h1>
+                <h1 className="text-3xl font-bold text-center mb-5 mt-8">{ticker} Information for {yearLabel}</h1>
                 <div className='flex align-middle mb-4'>
                     <input 
                     type="number" 
