@@ -67,7 +67,7 @@ function KnowledgeGraph() {
             responseList = JSON.parse(responseList);
         } catch(e) {
             console.log(e);
-            return <li key={e} className="text-left text-red-600">Error in Parsing Risk Factors</li>
+            return <li key={e} className="text-left">No Risk Factors Detected.</li>
         }
 
         return responseList.map((item, index) => (
