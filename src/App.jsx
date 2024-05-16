@@ -27,7 +27,7 @@ function App() {
   const [tableData, setTableData] = useState([]);
   const [error, setError] = useState('');
   const [headline, setHeadline] = useState('');
-  const [limit, setLimit] = useState('');
+  // const [limit, setLimit] = useState('');
   const [model, setModel] = useState('cosine');
   const [tickers, setTickers] = useState([]);
   const [sector, setSector] = useState(0);
@@ -37,7 +37,7 @@ function App() {
   const [abortController, setAbortController] = useState(null);
 
 
-  const environment = "dev"
+  const environment = "prod"
   const apiUrl = environment === "dev" ? "http://127.0.0.1:5000" : "https://finance-risk-toolkit-api-scx3vdzzxa-ue.a.run.app";
 
   const fetchExampleData = (e) => {
