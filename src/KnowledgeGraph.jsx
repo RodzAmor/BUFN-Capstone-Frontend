@@ -14,7 +14,7 @@ function KnowledgeGraph() {
     const [minConnection, setMinConnection] = useState(2);
     const [graph, setGraph] = useState({ nodes: [], edges: [] });
     
-    const environment = "dev"
+    const environment = "prod"
     const apiUrl = environment === "dev" ? "http://127.0.0.1:5000" : "https://finance-risk-toolkit-api-scx3vdzzxa-ue.a.run.app";
 
 

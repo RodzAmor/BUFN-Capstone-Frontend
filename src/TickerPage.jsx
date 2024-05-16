@@ -12,7 +12,7 @@ const TickerPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     
-    const environment = "dev";
+    const environment = "prod";
     const apiUrl = environment === "dev" ? "http://127.0.0.1:5000" : "https://finance-risk-toolkit-api-scx3vdzzxa-ue.a.run.app";
     var selectedYear = location.state?.year;
     const [year, setYear] = useState(selectedYear);

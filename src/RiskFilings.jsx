@@ -10,7 +10,7 @@ function SECRiskFilings() {
     const [searchTicker, setSearchTicker] = useState('');
     const [sector, setSector] = useState(0);
 
-    const environment = "dev"
+    const environment = "prod"
     const apiUrl = environment === "dev" ? "http://127.0.0.1:5000" : "https://finance-risk-toolkit-api-scx3vdzzxa-ue.a.run.app";
 
     const fetchCompanies = async () => {
