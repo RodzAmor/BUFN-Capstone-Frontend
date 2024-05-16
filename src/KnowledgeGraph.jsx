@@ -172,6 +172,9 @@ function KnowledgeGraph() {
     return (
         <div>
             <Navbar></Navbar>
+            <div className="container text-center mx-auto">
+                <h1 className="text-3xl font-semibold p-4">Knowledge Graph</h1>
+            </div>
             <div className="flex mx-auto p-4">
                 <div className='border w-1/2 mx-4'>
                     <h2 className="mr-2 font-bold text-xl text-center my-2">Legend</h2>
